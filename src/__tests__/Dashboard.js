@@ -48,6 +48,9 @@ describe('Given I am connected as an Admin', () => {
   })
 
   describe('When I am on Dashboard page and I click on arrow', () => {
+    // afterEach(() =>{
+    //   jest.clearAllMocks();
+    // })
     test('Then, tickets list should be unfolding, and cards should appear', async () => {
 
       const onNavigate = (pathname) => {

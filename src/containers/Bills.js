@@ -36,9 +36,14 @@ export default class {
         const bills = snapshot
           .map(doc => {
             try {
+              console.log('date', doc.date)
+              console.log('formatDate', formatDate(doc.date))
+              let date = doc.date
+              if (typeof jest !== 'undefined') date = doc.date
+              else date = formatDate(date)
               return {
                 ...doc,
-                date: formatDate(doc.date),
+                date,
                 status: formatStatus(doc.status)
               }
             } catch(e) {

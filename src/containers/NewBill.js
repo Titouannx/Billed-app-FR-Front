@@ -17,7 +17,21 @@ export default class NewBill {
   }
   handleChangeFile = e => {
     e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const file = fileInput.files[0];
+  
+    // Vérifier si le fichier a une extension valide
+    const validExtensions = ['jpg', 'jpeg', 'png'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const errorMessageElement = document.getElementById('error-message');
+    if (!validExtensions.includes(fileExtension)) {
+      // console.error('Extension de fichier non valide.');
+      errorMessageElement.textContent = "Extension de fichier non valide.";
+      return; // Arrêter le traitement si l'extension n'est pas valide
+    }
+    else errorMessageElement.textContent = "";
+
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
@@ -41,8 +55,22 @@ export default class NewBill {
       }).catch(error => console.error(error))
   }
   handleSubmit = e => {
+    
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+
+    // Vérifier si le fichier a une extension valide
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const file = fileInput.files[0];
+    const validExtensions = ['jpg', 'jpeg', 'png'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const errorMessageElement = document.getElementById('error-message');
+    if (!validExtensions.includes(fileExtension)) {
+      // console.error('Extension de fichier non valide.');
+      errorMessageElement.textContent = "Extension de fichier non valide.";
+      return; // Arrêter le traitement si l'extension n'est pas valide
+    }
+    else errorMessageElement.textContent = "";
+
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -62,6 +90,7 @@ export default class NewBill {
   }
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store
