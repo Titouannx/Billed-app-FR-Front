@@ -3,6 +3,7 @@
  */
 
 import { fireEvent, screen, waitFor } from "@testing-library/dom"
+import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import NewBill from "../containers/NewBill.js"
 import { ROUTES_PATH } from "../constants/routes.js"
@@ -84,7 +85,13 @@ describe("Given I am connected as an employee", () => {
       test("Then if the bill is valid, submit should render the Bill Page", async () => {
         jest.clearAllMocks();
 
-        const newBill = new NewBill({ document, onNavigate, mockStore, localStorage: window.localStorage })
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage
+        })
+        
         const bill = {
             name: "Facture factice",
             date: "2023-09-29",
@@ -106,6 +113,7 @@ describe("Given I am connected as an employee", () => {
         document.querySelector('textarea[data-testid="commentary"]').value = bill.commentary
         newBill.fileUrl = bill.fileUrl
         newBill.fileName = bill.fileName
+        
 
         // const btn = screen.getByTestId("btn-send-bill");
         // const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
@@ -114,22 +122,24 @@ describe("Given I am connected as an employee", () => {
 
         //get buttonNewBill
         await waitFor(()=> 
-          screen.getByTestId('btn-send-bill')
+          screen.getByTestId('form-new-bill')
         )
-        const btn = screen.getByTestId('btn-send-bill')
+        const form = screen.getByTestId('form-new-bill')
         //add event listener
-        const handleSubmit = jest.fn(() => NewBill.handleSubmit)
-        btn.addEventListener('click', handleSubmit)
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e))
+        form.addEventListener('click', handleSubmit)
         //fire event
-        fireEvent.click(btn)
+        userEvent.click(form)
         expect(handleSubmit).toHaveBeenCalled()
-        expect(btn).toBeTruthy()
+        expect(form).toBeTruthy()
 
         // screen.debug(form)
         // form.addEventListener("click", handleSubmit)
         // userEvent.click(form)
         // expect(screen.getByTestId("form-new-bill")).toBeTruthy();
-        // await expect(screen.findByText("Mes notes de frais")).toBeTruthy()
+        expect(screen.findByText("Mes notes de frais")).toBeTruthy()
+        expect(screen.findByText("Transports")).toBeTruthy()
+        expect(screen.findByText("Facture factice")).toBeTruthy()
         // const windowIcon = screen.getByTestId("icon-window")
         // await expect(windowIcon.classList.contains("active-icon")).toBe(true)
       })

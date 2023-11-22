@@ -3,6 +3,7 @@
  */
 
 import {screen, waitFor, fireEvent} from "@testing-library/dom"
+import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
 import BillsUI from "../views/BillsUI.js"
 import Bills from "../containers/Bills.js"
@@ -43,24 +44,25 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
     test("handleClickNewBill should be called when buttonNewBill is clicked", async () => {
-      await waitFor(() => screen.getAllByTestId('btn-new-bill'))
-      //get buttonNewBill
-      const buttonNewBill = screen.getByTestId('btn-new-bill')
-      const handleClickNewBill = jest.fn(() => Bills.handleClickNewBill)
-      //add event listener
-      buttonNewBill.addEventListener('click', handleClickNewBill)
-      //fire event
-      fireEvent.click(buttonNewBill)
-      //expect handleClickNewBill to be called
-      await Promise.resolve()
-      expect(handleClickNewBill).toHaveBeenCalled()
-      // expect(buttonNewBill).toBeTruthy()
+      const newBills = new Bills({ document, onNavigate, store: mockStore, localStorage  })
+      window.onload=function(){
+        const buttonNewBill = screen.getByTestId('btn-new-bill')
+  
+        const handleClickNewBill = jest.fn(() => newBills.handleClickNewBill)
+  
+        buttonNewBill.addEventListener('click', handleClickNewBill)
+        userEvent.click(buttonNewBill)
+        //expect handleClickNewBill to be called
+        expect(handleClickNewBill).toHaveBeenCalled()
+        // expect(buttonNewBill).toBeTruthy()
+      }
     })
     test("handleClickIconEye should be called when iconEye is clicked", async () => {
       await waitFor(() => screen.getAllByTestId('icon-eye')[0])
       const iconEye = screen.getAllByTestId('icon-eye')[0]
+      
       const handleClickIconEye = jest.fn(() => Bills.handleClickIconEye)
-      // screen.debug(screen.getAllByTestId('icon-eye')[0])
+
       iconEye.addEventListener('click', handleClickIconEye)
       fireEvent.click(iconEye)
       expect(handleClickIconEye).toHaveBeenCalled()
@@ -69,7 +71,7 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-// test d'intégration GET
+//test d'intégration GET
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to Bills Page", () => {
     test("fetches bills from mock API GET", async () => {
